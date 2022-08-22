@@ -84,21 +84,16 @@ func extractTweet(url string, c *colly.Collector) (text string, name string, use
 		}
 	})
 
-	// Find @ username in Tweet
-	c.OnHTML("b", func(e *colly.HTMLElement) {
-		if e.Attr("class") == "u-linkComplex-target" {
-			username = e.Text
-		}
-	})
-
 	// Visit Tweet
 	err := c.Visit(url)
 	if err != nil {
 		logrus.Error("Cannot pull tweet ", err)
 	}
 
-	// Calculate Tweet ID from URL
-	id = strings.TrimPrefix(strings.ToLower(url), "https://twitter.com/"+strings.ToLower(username)+"/status/")
+	// Calculate Tweet ID & Username from URL
+	urlSegments := strings.Split(strings.ToLower(url), "/")
+	username = urlSegments[3]
+	id = urlSegments[5]
 
 	return
 }
